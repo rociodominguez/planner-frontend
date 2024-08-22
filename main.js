@@ -70,30 +70,34 @@ const handleRegister = async (e) => {
 };
 
 const renderLogin = () => {
-    appDiv.innerHTML = '';
+  appDiv.innerHTML = '';
 
-    const header = document.createElement('h2');
-    header.textContent = 'Iniciar Sesión';
-    appDiv.appendChild(header);
+  const header = document.createElement('h2');
+  header.textContent = 'Iniciar Sesión';
+  appDiv.appendChild(header);
 
-    const form = document.createElement('form');
-    form.id = 'loginForm';
+  const form = document.createElement('form');
+  form.id = 'loginForm';
 
-    form.innerHTML = `
-        <label>Nombre de usuario: <input type="text" id="username" /></label>
-        <label>Contraseña: <input type="password" id="password" /></label>
-        <button type="submit">Iniciar Sesión</button>
-    `;
+  form.innerHTML = `
+      <label>Nombre de usuario: <input type="text" id="username" /></label>
+      <label>Contraseña: <input type="password" id="password" /></label>
+      <button type="submit">Iniciar Sesión</button>
+      <div id="loginError" class="error-message"></div>
+  `;
 
-    appDiv.appendChild(form);
+  appDiv.appendChild(form);
 
-    form.addEventListener('submit', handleLogin);
+  form.addEventListener('submit', handleLogin);
 };
 
 const handleLogin = async (e) => {
   e.preventDefault();
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;
+
+  const errorDiv = document.getElementById('loginError');
+  errorDiv.classList.remove('show'); // Ocultar el mensaje de error antes de la solicitud
 
   try {
       const response = await fetch(`${API_URL}/users/login`, {
@@ -111,10 +115,13 @@ const handleLogin = async (e) => {
           renderDashboard();
       } else {
           const errorData = await response.json();
-          console.error(`Error: ${errorData.error}`);
+          errorDiv.textContent = `Error: ${errorData.error}`;
+          errorDiv.classList.add('show'); // Mostrar el mensaje de error
       }
   } catch (error) {
       console.error('Error al iniciar sesión:', error);
+      errorDiv.textContent = 'Error al iniciar sesión. Por favor, intenta de nuevo.';
+      errorDiv.classList.add('show'); // Mostrar el mensaje de error en caso de excepción
   }
 };
 
@@ -196,7 +203,7 @@ const renderEvents = async () => {
   });
 
   const events = await response.json();
-  console.log('Eventos:', events); // Verifica que los eventos tienen imageUrl
+  console.log('Eventos:', events);
 
   contentDiv.innerHTML = '';
 
@@ -224,15 +231,13 @@ const renderEvents = async () => {
       attendantsCount.textContent = `Asistentes: ${event.attendantsCount}`;
       eventDiv.appendChild(attendantsCount);
 
-      // Agregar la imagen si existe
       if (event.imageUrl) {
           const img = document.createElement('img');
           img.src = event.imageUrl;
           img.alt = 'Imagen del evento';
-          img.style.maxWidth = '300px'; // Ajusta el tamaño según sea necesario
-          img.style.height = 'auto'; // Mantener la relación de aspecto
+          img.style.maxWidth = '300px';
+          img.style.height = 'auto';
           img.onerror = () => {
-              img.src = 'path/to/default-image.jpg'; // Ruta a una imagen por defecto si la imagen falla
               console.error('Error al cargar la imagen:', event.imageUrl);
           };
           eventDiv.appendChild(img);
@@ -243,13 +248,37 @@ const renderEvents = async () => {
       confirmBtn.addEventListener('click', () => confirmAttendance(event._id));
       eventDiv.appendChild(confirmBtn);
 
-      const deleteBtn = document.createElement('button');
-      deleteBtn.textContent = 'Eliminar Evento';
-      deleteBtn.addEventListener('click', () => deleteEvent(event._id));
-      eventDiv.appendChild(deleteBtn);
+      const cancelBtn = document.createElement('button');
+      cancelBtn.textContent = 'Cancelar Asistencia';
+      cancelBtn.addEventListener('click', () => cancelAttendance(event._id));
+      eventDiv.appendChild(cancelBtn);
 
       contentDiv.appendChild(eventDiv);
   });
+};
+
+const cancelAttendance = async (eventId) => {
+  const token = localStorage.getItem('token');
+  try {
+      const response = await fetch(`${API_URL}/events/${eventId}/attendants`, {
+          method: 'DELETE',
+          headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userId: localStorage.getItem('userId') })
+      });
+
+      if (response.ok) {
+          alert('Asistencia cancelada.');
+          renderEvents();
+      } else {
+          const errorData = await response.json();
+          console.error('Error al cancelar asistencia:', errorData.error);
+      }
+  } catch (error) {
+      console.error('Error al cancelar asistencia:', error);
+  }
 };
 
 const confirmAttendance = async (eventId) => {
