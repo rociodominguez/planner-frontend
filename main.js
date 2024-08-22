@@ -91,30 +91,31 @@ const renderLogin = () => {
 };
 
 const handleLogin = async (e) => {
-    e.preventDefault();
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
+  e.preventDefault();
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
 
-    try {
-        const response = await fetch(`${API_URL}/users/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userName: username, password })
-        });
+  try {
+      const response = await fetch(`${API_URL}/users/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userName: username, password })
+      });
 
-        if (response.ok) {
-            const data = await response.json();
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('role', data.role);
-            localStorage.setItem('username', username);
-            renderDashboard();
-        } else {
-            const errorData = await response.json();
-            console.error(`Error: ${errorData.error}`);
-        }
-    } catch (error) {
-        console.error('Error al iniciar sesión:', error);
-    }
+      if (response.ok) {
+          const data = await response.json();
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('role', data.role);
+          localStorage.setItem('username', username);
+          localStorage.setItem('userId', data.userId);
+          renderDashboard();
+      } else {
+          const errorData = await response.json();
+          console.error(`Error: ${errorData.error}`);
+      }
+  } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+  }
 };
 
 const renderDashboard = async () => {
@@ -340,25 +341,68 @@ const renderConfirmedEvents = async () => {
   }
 };
 
-
 const renderProfile = () => {
-    const contentDiv = document.getElementById('content');
-    if (!contentDiv) {
-        console.error('El contenedor de contenido no se encontró.');
-        return;
-    }
+  const contentDiv = document.getElementById('content');
+  if (!contentDiv) {
+      console.error('El contenedor de contenido no se encontró.');
+      return;
+  }
 
-    const header = document.createElement('h2');
-    header.textContent = 'Perfil de Usuario';
-    contentDiv.appendChild(header);
+  contentDiv.innerHTML = '';
 
-    const username = localStorage.getItem('username');
-    const role = localStorage.getItem('role');
+  const header = document.createElement('h2');
+  header.textContent = 'Perfil de Usuario';
+  contentDiv.appendChild(header);
 
-    contentDiv.innerHTML = `
-        <p><strong>Nombre de usuario:</strong> ${username}</p>
-        <p><strong>Rol:</strong> ${role}</p>
-    `;
+  const username = localStorage.getItem('username');
+  const role = localStorage.getItem('role');
+
+  const form = document.createElement('form');
+  form.id = 'profileForm';
+
+  form.innerHTML = `
+      <label><strong>Nombre de usuario:</strong> <input type="text" id="editUsername" value="${username}" /></label>
+      <button type="submit">Guardar Cambios</button>
+  `;
+
+  contentDiv.appendChild(form);
+
+  form.addEventListener('submit', handleUpdateProfile);
+};
+
+const handleUpdateProfile = async (e) => {
+  e.preventDefault();
+  const token = localStorage.getItem('token');
+  const userId = localStorage.getItem('userId');
+  const username = document.getElementById('editUsername').value;
+
+  if (!userId) {
+      console.error('ID de usuario no encontrado en el localStorage.');
+      return;
+  }
+
+  try {
+      const response = await fetch(`${API_URL}/users/${userId}`, {
+          method: 'PUT',
+          headers: { 
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userName: username })
+      });
+
+      if (response.ok) {
+          const updatedUser = await response.json();
+          localStorage.setItem('username', updatedUser.userName);
+          alert('Nombre de usuario actualizado con éxito.');
+          renderEvents();
+      } else {
+          const errorData = await response.json();
+          console.error('Error al actualizar el perfil:', errorData.error);
+      }
+  } catch (error) {
+      console.error('Error al actualizar el perfil:', error);
+  }
 };
 
 const renderCreateEvent = () => {
