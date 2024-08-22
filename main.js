@@ -62,67 +62,66 @@ const handleRegister = async (e) => {
         if (response.ok) {
             renderLogin();
         } else {
-            console.error('Error en el registro.');
+            console.log('Error en el registro:', await response.text());
         }
     } catch (error) {
-        console.error('Error en el registro:', error);
+        console.log('Error en la solicitud de registro:', error);
     }
 };
 
 const renderLogin = () => {
-  appDiv.innerHTML = '';
+    appDiv.innerHTML = '';
 
-  const header = document.createElement('h2');
-  header.textContent = 'Iniciar Sesión';
-  appDiv.appendChild(header);
+    const header = document.createElement('h2');
+    header.textContent = 'Iniciar Sesión';
+    appDiv.appendChild(header);
 
-  const form = document.createElement('form');
-  form.id = 'loginForm';
+    const form = document.createElement('form');
+    form.id = 'loginForm';
 
-  form.innerHTML = `
-      <label>Nombre de usuario: <input type="text" id="username" /></label>
-      <label>Contraseña: <input type="password" id="password" /></label>
-      <button type="submit">Iniciar Sesión</button>
-      <div id="loginError" class="error-message"></div>
-  `;
+    form.innerHTML = `
+        <label>Nombre de usuario: <input type="text" id="username" /></label>
+        <label>Contraseña: <input type="password" id="password" /></label>
+        <button type="submit">Iniciar Sesión</button>
+        <div id="loginError" class="error-message"></div>
+    `;
 
-  appDiv.appendChild(form);
+    appDiv.appendChild(form);
 
-  form.addEventListener('submit', handleLogin);
+    form.addEventListener('submit', handleLogin);
 };
 
 const handleLogin = async (e) => {
-  e.preventDefault();
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
+    e.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
 
-  const errorDiv = document.getElementById('loginError');
-  errorDiv.classList.remove('show'); // Ocultar el mensaje de error antes de la solicitud
+    const errorDiv = document.getElementById('loginError');
+    errorDiv.classList.remove('show');
 
-  try {
-      const response = await fetch(`${API_URL}/users/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userName: username, password })
-      });
+    try {
+        const response = await fetch(`${API_URL}/users/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userName: username, password })
+        });
 
-      if (response.ok) {
-          const data = await response.json();
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('role', data.role);
-          localStorage.setItem('username', username);
-          localStorage.setItem('userId', data.userId);
-          renderDashboard();
-      } else {
-          const errorData = await response.json();
-          errorDiv.textContent = `Error: ${errorData.error}`;
-          errorDiv.classList.add('show'); // Mostrar el mensaje de error
-      }
-  } catch (error) {
-      console.error('Error al iniciar sesión:', error);
-      errorDiv.textContent = 'Error al iniciar sesión. Por favor, intenta de nuevo.';
-      errorDiv.classList.add('show'); // Mostrar el mensaje de error en caso de excepción
-  }
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('role', data.role);
+            localStorage.setItem('username', username);
+            localStorage.setItem('userId', data.userId);
+            renderDashboard();
+        } else {
+            const errorData = await response.json();
+            errorDiv.textContent = `Error: ${errorData.error}`;
+            errorDiv.classList.add('show'); 
+        }
+    } catch (error) {
+        errorDiv.textContent = 'Error al iniciar sesión. Por favor, intenta de nuevo.';
+        errorDiv.classList.add('show');
+    }
 };
 
 const renderDashboard = async () => {
@@ -155,11 +154,8 @@ const renderDashboard = async () => {
         a.textContent = item.text;
 
         if (item.adminOnly) {
-            console.log('Verificando rol para:', item.id);
             const role = localStorage.getItem('role');
-            console.log('Rol actual:', role); 
             if (role !== 'admin') {
-                console.log('No es admin. Omite el enlace:', item.id);
                 return;
             }
         }
@@ -191,118 +187,132 @@ const renderDashboard = async () => {
 };
 
 const renderEvents = async () => {
-  const contentDiv = document.getElementById('content');
-  if (!contentDiv) {
-      console.error('El contenedor de contenido no se encontró.');
-      return;
-  }
+    const contentDiv = document.getElementById('content');
+    if (!contentDiv) {
+        return;
+    }
 
-  const token = localStorage.getItem('token');
-  const response = await fetch(`${API_URL}/events`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-  });
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+    const role = localStorage.getItem('role');
+    
+    try {
+        const response = await fetch(`${API_URL}/events`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
 
-  const events = await response.json();
-  console.log('Eventos:', events);
+        const events = await response.json();
 
-  contentDiv.innerHTML = '';
+        contentDiv.innerHTML = '';
 
-  const header = document.createElement('h2');
-  header.textContent = 'Eventos Disponibles';
-  contentDiv.appendChild(header);
+        const header = document.createElement('h2');
+        header.textContent = 'Eventos Disponibles';
+        contentDiv.appendChild(header);
 
-  events.forEach(event => {
-      const eventDiv = document.createElement('div');
+        events.forEach(event => {
+            const eventDiv = document.createElement('div');
 
-      const title = document.createElement('h3');
-      title.textContent = event.title;
-      eventDiv.appendChild(title);
+            const title = document.createElement('h3');
+            title.textContent = event.title;
+            eventDiv.appendChild(title);
 
-      const description = document.createElement('p');
-      description.textContent = event.description;
-      eventDiv.appendChild(description);
+            const description = document.createElement('p');
+            description.textContent = event.description;
+            eventDiv.appendChild(description);
 
-      const date = document.createElement('p');
-      const eventDate = new Date(event.date);
-      date.textContent = `Fecha: ${eventDate.toLocaleDateString()} ${eventDate.toLocaleTimeString()}`;
-      eventDiv.appendChild(date);
+            const date = document.createElement('p');
+            const eventDate = new Date(event.date);
+            date.textContent = `Fecha: ${eventDate.toLocaleDateString()} ${eventDate.toLocaleTimeString()}`;
+            eventDiv.appendChild(date);
 
-      const attendantsCount = document.createElement('p');
-      attendantsCount.textContent = `Asistentes: ${event.attendantsCount}`;
-      eventDiv.appendChild(attendantsCount);
+            const attendantsCount = document.createElement('p');
+            attendantsCount.textContent = `Asistentes: ${event.attendantsCount}`;
+            eventDiv.appendChild(attendantsCount);
 
-      if (event.imageUrl) {
-          const img = document.createElement('img');
-          img.src = event.imageUrl;
-          img.alt = 'Imagen del evento';
-          img.style.maxWidth = '300px';
-          img.style.height = 'auto';
-          img.onerror = () => {
-              console.error('Error al cargar la imagen:', event.imageUrl);
-          };
-          eventDiv.appendChild(img);
-      }
+            if (event.imageUrl) {
+                const img = document.createElement('img');
+                img.src = event.imageUrl;
+                img.alt = 'Imagen del evento';
+                img.style.maxWidth = '300px';
+                img.style.height = 'auto';
+                img.onerror = () => {
+                    img.src = 'path/to/default-image.jpg';
+                };
+                eventDiv.appendChild(img);
+            }
 
-      const confirmBtn = document.createElement('button');
-      confirmBtn.textContent = 'Confirmar Asistencia';
-      confirmBtn.addEventListener('click', () => confirmAttendance(event._id));
-      eventDiv.appendChild(confirmBtn);
+            const confirmBtn = document.createElement('button');
+            confirmBtn.textContent = 'Confirmar Asistencia';
+            confirmBtn.addEventListener('click', () => confirmAttendance(event._id));
+            eventDiv.appendChild(confirmBtn);
 
-      const cancelBtn = document.createElement('button');
-      cancelBtn.textContent = 'Cancelar Asistencia';
-      cancelBtn.addEventListener('click', () => cancelAttendance(event._id));
-      eventDiv.appendChild(cancelBtn);
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = 'Cancelar Asistencia';
+            cancelBtn.style.display = 'none';
+            cancelBtn.addEventListener('click', () => cancelAttendance(event._id));
+            eventDiv.appendChild(cancelBtn);
 
-      contentDiv.appendChild(eventDiv);
-  });
+            if (role === 'admin') {
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Eliminar Evento';
+                deleteBtn.addEventListener('click', () => deleteEvent(event._id));
+                eventDiv.appendChild(deleteBtn);
+            }
+
+            if (event.attendants && event.attendants.some(attendant => attendant._id === userId)) {
+                confirmBtn.style.display = 'none';
+                cancelBtn.style.display = 'inline';
+            }
+
+            contentDiv.appendChild(eventDiv);
+        });
+    } catch (error) {
+        console.log('Error al cargar eventos:', error);
+    }
 };
 
 const cancelAttendance = async (eventId) => {
-  const token = localStorage.getItem('token');
-  try {
-      const response = await fetch(`${API_URL}/events/${eventId}/attendants`, {
-          method: 'DELETE',
-          headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ userId: localStorage.getItem('userId') })
-      });
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`${API_URL}/events/${eventId}/attendants`, {
+            method: 'DELETE',
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId: localStorage.getItem('userId') })
+        });
 
-      if (response.ok) {
-          alert('Asistencia cancelada.');
-          renderEvents();
-      } else {
-          const errorData = await response.json();
-          console.error('Error al cancelar asistencia:', errorData.error);
-      }
-  } catch (error) {
-      console.error('Error al cancelar asistencia:', error);
-  }
+        if (response.ok) {
+            renderEvents();
+        } else {
+            console.log('Error al cancelar la asistencia:', await response.text());
+        }
+    } catch (error) {
+        console.log('Error en la solicitud de cancelación de asistencia:', error);
+    }
 };
 
 const confirmAttendance = async (eventId) => {
-  const token = localStorage.getItem('token');
-  try {
-      const response = await fetch(`${API_URL}/events/${eventId}/attendants`, {
-          method: 'POST',
-          headers: { 
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({}) 
-      });
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`${API_URL}/events/${eventId}/attendants`, {
+            method: 'POST',
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({}) 
+        });
 
-      if (response.ok) {
-          alert('Asistencia confirmada.');
-          renderEvents();
-      } else {
-          const errorData = await response.json();
-          console.error('Error al confirmar asistencia:', errorData.error);
-      }
-  } catch (error) {
-      console.error('Error al confirmar asistencia:', error);
-  }
+        if (response.ok) {
+            renderEvents();
+        } else {
+            console.log('Error al confirmar la asistencia:', await response.text());
+        }
+    } catch (error) {
+        console.log('Error en la solicitud de confirmación de asistencia:', error);
+    }
 };
 
 const deleteEvent = async (eventId) => {
@@ -314,138 +324,107 @@ const deleteEvent = async (eventId) => {
         });
 
         if (response.ok) {
-            alert('Evento eliminado.');
             renderEvents();
         } else {
-            console.error('Error al eliminar el evento.');
+            console.log('Error al eliminar el evento:', await response.text());
         }
     } catch (error) {
-        console.error('Error al eliminar el evento:', error);
+        console.log('Error en la solicitud de eliminación de evento:', error);
     }
 };
 
 const renderConfirmedEvents = async () => {
-  const contentDiv = document.getElementById('content');
-  if (!contentDiv) {
-    console.error('El contenedor de contenido no se encontró.');
-    return;
-  }
-
-  const token = localStorage.getItem('token');
-  try {
-    const response = await fetch(`${API_URL}/users/profile`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (response.ok) {
-      const events = await response.json();
-      
-      contentDiv.innerHTML = '';
-
-      const header = document.createElement('h2');
-      header.textContent = 'Eventos Confirmados';
-      contentDiv.appendChild(header);
-
-      if (events.length === 0) {
-        const noEventsMessage = document.createElement('p');
-        noEventsMessage.textContent = 'No tienes eventos confirmados.';
-        contentDiv.appendChild(noEventsMessage);
-      } else {
-        const ul = document.createElement('ul');
-        events.forEach(event => {
-          const li = document.createElement('li');
-          li.textContent = `${event.title} - ${new Date(event.date).toLocaleDateString()}`;
-          ul.appendChild(li);
-        });
-        contentDiv.appendChild(ul);
-      }
-    } else {
-      console.error('Error al obtener los eventos confirmados.');
-    }
-  } catch (error) {
-    console.error('Error al cargar los eventos confirmados:', error);
-  }
-};
-
-const renderProfile = () => {
-  const contentDiv = document.getElementById('content');
-  if (!contentDiv) {
-      console.error('El contenedor de contenido no se encontró.');
-      return;
-  }
-
-  contentDiv.innerHTML = '';
-
-  const header = document.createElement('h2');
-  header.textContent = 'Perfil de Usuario';
-  contentDiv.appendChild(header);
-
-  const username = localStorage.getItem('username');
-  const role = localStorage.getItem('role');
-
-  const form = document.createElement('form');
-  form.id = 'profileForm';
-
-  form.innerHTML = `
-      <label><strong>Nombre de usuario:</strong> <input type="text" id="editUsername" value="${username}" /></label>
-      <button type="submit">Guardar Cambios</button>
-  `;
-
-  contentDiv.appendChild(form);
-
-  form.addEventListener('submit', handleUpdateProfile);
-};
-
-const handleUpdateProfile = async (e) => {
-  e.preventDefault();
-  const token = localStorage.getItem('token');
-  const userId = localStorage.getItem('userId');
-  const username = document.getElementById('editUsername').value;
-
-  if (!userId) {
-      console.error('ID de usuario no encontrado en el localStorage.');
-      return;
-  }
-
-  try {
-      const response = await fetch(`${API_URL}/users/${userId}`, {
-          method: 'PUT',
-          headers: { 
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ userName: username })
-      });
-
-      if (response.ok) {
-          const updatedUser = await response.json();
-          localStorage.setItem('username', updatedUser.userName);
-          alert('Nombre de usuario actualizado con éxito.');
-          renderEvents();
-      } else {
-          const errorData = await response.json();
-          console.error('Error al actualizar el perfil:', errorData.error);
-      }
-  } catch (error) {
-      console.error('Error al actualizar el perfil:', error);
-  }
-};
-
-const renderCreateEvent = () => {
     const contentDiv = document.getElementById('content');
     if (!contentDiv) {
-        console.error('El contenedor de contenido no se encontró.');
         return;
     }
 
-    contentDiv.innerHTML = '';
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`${API_URL}/users/profile`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            const events = await response.json();
+            
+            contentDiv.innerHTML = '';
+
+            const header = document.createElement('h2');
+            header.textContent = 'Eventos Confirmados';
+            contentDiv.appendChild(header);
+
+            if (events.length === 0) {
+                const noEventsMessage = document.createElement('p');
+                noEventsMessage.textContent = 'No tienes eventos confirmados.';
+                contentDiv.appendChild(noEventsMessage);
+            } else {
+                const ul = document.createElement('ul');
+                events.forEach(event => {
+                    const li = document.createElement('li');
+                    li.textContent = event.title;
+                    ul.appendChild(li);
+                });
+                contentDiv.appendChild(ul);
+            }
+        } else {
+            console.log('Error al cargar eventos confirmados:', await response.text());
+        }
+    } catch (error) {
+        console.log('Error en la solicitud de eventos confirmados:', error);
+    }
+};
+
+const renderProfile = async () => {
+    const contentDiv = document.getElementById('content');
+    if (!contentDiv) {
+        return;
+    }
+
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`${API_URL}/users/profile`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            const profile = await response.json();
+            
+            contentDiv.innerHTML = '';
+
+            const header = document.createElement('h2');
+            header.textContent = 'Perfil';
+            contentDiv.appendChild(header);
+
+            const username = document.createElement('p');
+            username.textContent = `Nombre de usuario: ${profile.userName}`;
+            contentDiv.appendChild(username);
+
+            const email = document.createElement('p');
+            email.textContent = `Email: ${profile.email}`;
+            contentDiv.appendChild(email);
+
+            const role = document.createElement('p');
+            role.textContent = `Rol: ${profile.role}`;
+            contentDiv.appendChild(role);
+        } else {
+            console.log('Error al cargar perfil:', await response.text());
+        }
+    } catch (error) {
+        console.log('Error en la solicitud de perfil:', error);
+    }
+};
+
+const renderCreateEvent = () => {
+    appDiv.innerHTML = '';
 
     const header = document.createElement('h2');
     header.textContent = 'Crear Evento';
-    contentDiv.appendChild(header);
+    appDiv.appendChild(header);
 
     const form = document.createElement('form');
     form.id = 'createEventForm';
@@ -453,50 +432,50 @@ const renderCreateEvent = () => {
     form.innerHTML = `
         <label>Título: <input type="text" id="title" /></label>
         <label>Descripción: <textarea id="description"></textarea></label>
-        <label>Fecha y Hora: <input type="datetime-local" id="date" /></label>
+        <label>Fecha y hora: <input type="datetime-local" id="date" /></label>
         <label>Imagen URL: <input type="text" id="imageUrl" /></label>
         <button type="submit">Crear Evento</button>
     `;
 
-    contentDiv.appendChild(form);
+    appDiv.appendChild(form);
 
     form.addEventListener('submit', handleCreateEvent);
 };
 
 const handleCreateEvent = async (e) => {
-  e.preventDefault();
-  const token = localStorage.getItem('token');
-  const title = document.getElementById('title').value;
-  const description = document.getElementById('description').value;
-  const date = document.getElementById('date').value;
-  const imageUrl = document.getElementById('imageUrl').value;
+    e.preventDefault();
+    const title = document.getElementById('title').value;
+    const description = document.getElementById('description').value;
+    const date = document.getElementById('date').value;
+    const imageUrl = document.getElementById('imageUrl').value;
 
-  try {
-      const response = await fetch(`${API_URL}/events`, {
-          method: 'POST',
-          headers: { 
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ title, description, date, imageUrl })
-      });
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`${API_URL}/events`, {
+            method: 'POST',
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ title, description, date, imageUrl })
+        });
 
-      if (response.ok) {
-          alert('Evento creado.');
-          renderEvents();
-      } else {
-          console.error('Error al crear el evento.');
-      }
-  } catch (error) {
-      console.error('Error al crear el evento:', error);
-  }
+        if (response.ok) {
+            renderEvents();
+        } else {
+            console.log('Error al crear evento:', await response.text());
+        }
+    } catch (error) {
+        console.log('Error en la solicitud de creación de evento:', error);
+    }
 };
 
 const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
     localStorage.removeItem('username');
+    localStorage.removeItem('userId');
     renderHome();
 };
 
-document.addEventListener('DOMContentLoaded', renderHome);
+renderHome();
