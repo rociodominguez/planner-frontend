@@ -1,0 +1,52 @@
+#content {
+    padding: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+    background-color: var(--background-color);
+    border-radius: 8px;
+    box-shadow: 0 0 10px var(--shadow);
+    box-sizing: border-box; 
+}
+
+
+#updateProfileForm {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#updateProfileForm label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+#updateProfileForm input[type="text"] {
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#updateProfileForm button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    background-color: var(--button-color);
+    color: var(--main-color);
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#updateProfileForm button:hover {
+    background-color: var(--button-hover);
+}
+
+#updateProfileForm button:disabled {
+    background-color: var(--border);
+    cursor: not-allowed;
+}

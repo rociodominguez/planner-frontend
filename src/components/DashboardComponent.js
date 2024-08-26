@@ -3,6 +3,7 @@ import { renderConfirmedEvents } from './ConfirmedEventsComponent.js';
 import { renderProfile } from './ProfileComponent.js';
 import { renderCreateEvent } from './CreateEventComponent.js';
 import { handleLogout } from './LogoutComponent.js';
+import './DashboardComponent.css'
 
 export const renderDashboard = async () => {
     const appDiv = document.getElementById('app');
@@ -19,6 +20,7 @@ export const renderDashboard = async () => {
 
     const nav = document.createElement('nav');
     const ul = document.createElement('ul');
+    ul.classList.add('nav-menu');
 
     const menuItems = [
         { id: 'eventsLink', text: 'Eventos Disponibles' },
@@ -45,6 +47,15 @@ export const renderDashboard = async () => {
         ul.appendChild(li);
     });
 
+
+    const logoutLi = document.createElement('li');
+    const logoutLink = document.createElement('a');
+    logoutLink.href = '#';
+    logoutLink.id = 'logoutLink';
+    logoutLink.textContent = 'Cerrar Sesión';
+    logoutLi.appendChild(logoutLink);
+    ul.appendChild(logoutLi);
+
     nav.appendChild(ul);
     appDiv.appendChild(nav);
 
@@ -55,16 +66,13 @@ export const renderDashboard = async () => {
     document.getElementById('eventsLink').addEventListener('click', renderEvents);
     document.getElementById('confirmedEventsLink').addEventListener('click', renderConfirmedEvents);
     document.getElementById('profileLink').addEventListener('click', renderProfile);
+
     const createEventLink = document.getElementById('createEventLink');
     if (createEventLink) {
         createEventLink.addEventListener('click', renderCreateEvent);
     }
 
-    const logoutBtn = document.createElement('button');
-    logoutBtn.id = 'logoutBtn';
-    logoutBtn.textContent = 'Cerrar Sesión';
-    appDiv.appendChild(logoutBtn);
-    logoutBtn.addEventListener('click', handleLogout);
+    document.getElementById('logoutLink').addEventListener('click', handleLogout);
 
-    renderEvents();
+    renderEvents(); 
 };

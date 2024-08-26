@@ -1,0 +1,28 @@
+nav {
+    margin-bottom: 10px;
+}
+
+.nav-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap; 
+}
+
+.nav-menu li {
+    margin-right: 1px; 
+}
+
+.nav-menu a {
+    text-decoration: none;
+    color: var(--button-color); 
+    font-weight: bold;
+    padding: 10px 15px;
+    display: block; 
+    font-size: 15px;
+}
+
+.nav-menu a:hover {
+    text-decoration: underline; 
+}

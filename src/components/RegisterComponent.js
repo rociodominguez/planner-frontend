@@ -1,5 +1,7 @@
 import { renderLogin } from './LoginComponent.js';
 import { API_URL } from '../services/ApiService.js';
+import './RegisterComponent.css'
+import { renderHome } from './HomeComponent.js';
 
 const handleRegister = async (e) => {
     e.preventDefault();
@@ -40,8 +42,11 @@ export const renderRegister = () => {
         <label>Email: <input type="email" id="email" /></label>
         <label>Contraseña: <input type="password" id="password" /></label>
         <button type="submit">Registrar</button>
+        <button type="button" id="backToHome">Volver al Menú Principal</button> <!-- Nuevo botón -->
     `;
 
     appDiv.appendChild(form);
     form.addEventListener('submit', handleRegister);
+
+    document.getElementById('backToHome').addEventListener('click', renderHome);
 };

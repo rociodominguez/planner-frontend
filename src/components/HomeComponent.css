@@ -1,0 +1,72 @@
+#app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh; 
+    padding: 20px; 
+    box-sizing: border-box;
+    margin: 0;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+p {
+    margin: 20px 0;
+    max-width: 600px;
+    line-height: 1.5;
+}
+
+.button-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center; 
+    margin-top: 20px;
+}
+
+button {
+    background-color: var(--button-color);
+    color: var(--main-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: var(--button-hover);
+}
+
+form {
+    max-width: 100%; 
+    box-sizing: border-box; 
+    padding: 20px;
+    margin: 0 auto;
+    background-color: var(--background-color);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    box-sizing: border-box;
+}
+
+.error-message {
+    color: var(--error);
+    display: none; 
+}
+
+.error-message.show {
+    display: block;
+}

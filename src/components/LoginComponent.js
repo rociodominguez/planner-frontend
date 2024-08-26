@@ -1,5 +1,7 @@
 import { API_URL } from '../services/ApiService.js';
 import { renderDashboard } from './DashboardComponent.js';
+import { renderHome } from './HomeComponent.js';
+import './LoginComponent.css'
 
 const handleLogin = async (e) => {
     e.preventDefault();
@@ -50,8 +52,11 @@ export const renderLogin = () => {
         <label>Contraseña: <input type="password" id="password" /></label>
         <button type="submit">Iniciar Sesión</button>
         <div id="loginError" class="error-message"></div>
+        <button type="button" id="backToHome">Volver al Menú Principal</button> <!-- Nuevo botón -->
     `;
 
     appDiv.appendChild(form);
     form.addEventListener('submit', handleLogin);
+
+    document.getElementById('backToHome').addEventListener('click', renderHome);
 };

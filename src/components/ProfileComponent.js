@@ -1,5 +1,6 @@
 import { API_URL } from '../services/ApiService.js';
 import { renderEvents } from './EventsComponent.js';
+import './ProfileComponent.css'
 
 export const renderProfile = async () => {
     const contentDiv = document.getElementById('content');
@@ -23,10 +24,10 @@ export const renderProfile = async () => {
             form.id = 'updateProfileForm';
             form.innerHTML = `
                 <label>
-                    Nuevo Nombre de usuario:
+                    Nuevo nombre de usuario:
                     <input type="text" id="newUsername" value="${profile.username || ''}" />
                 </label>
-                <button type="submit">Actualizar Nombre de Usuario</button>
+                <button type="submit">Actualizar</button>
             `;
 
             contentDiv.appendChild(form);

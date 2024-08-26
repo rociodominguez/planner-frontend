@@ -1,41 +1,61 @@
 import { API_URL } from '../services/ApiService';
 import { renderEvents } from './EventsComponent';
+import './CreateEventComponent.css'
 
 const handleCreateEvent = async (e) => {
     e.preventDefault();
+
     const title = document.getElementById('title').value;
     const description = document.getElementById('description').value;
     const date = document.getElementById('date').value;
-    const imageUrl = document.getElementById('imageUrl').value;
+    const imageFile = document.getElementById('imageUrl').files[0];
 
     const token = localStorage.getItem('token');
+
+    const formData = new FormData(); 
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('date', date);
+    formData.append('imageUrl', imageFile);
+
+
+    const loadingDiv = document.getElementById('loading');
+    if (loadingDiv) {
+        loadingDiv.style.display = 'block';
+    }
+
     try {
         const response = await fetch(`${API_URL}/events`, {
             method: 'POST',
             headers: { 
                 'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ title, description, date, imageUrl })
+            body: formData
         });
 
         if (response.ok) {
-            renderEvents();
+            await renderEvents();
         } else {
             console.log('Error al crear evento:', await response.text());
         }
     } catch (error) {
         console.log('Error en la solicitud de creación de evento:', error);
+    } finally {
+        const loadingDiv = document.getElementById('loading');
+        if (loadingDiv) {
+            loadingDiv.style.display = 'none';
+        }
     }
 };
 
+
 export const renderCreateEvent = () => {
-    const appDiv = document.getElementById('app');
-    appDiv.innerHTML = '';
+    const contentDiv = document.getElementById('content');
+    contentDiv.innerHTML = '';
 
     const header = document.createElement('h2');
     header.textContent = 'Crear Evento';
-    appDiv.appendChild(header);
+    contentDiv.appendChild(header);
 
     const form = document.createElement('form');
     form.id = 'createEventForm';
@@ -44,12 +64,17 @@ export const renderCreateEvent = () => {
         <label>Título: <input type="text" id="title" /></label>
         <label>Descripción: <textarea id="description"></textarea></label>
         <label>Fecha y hora: <input type="datetime-local" id="date" /></label>
-        <label>Imagen URL: <input type="text" id="imageUrl" /></label>
+        <label>Imagen: <input type="file" id="imageUrl" /></label> <!-- Cambiado a type="file" -->
         <button type="submit">Crear Evento</button>
     `;
 
-    appDiv.appendChild(form);
+    contentDiv.appendChild(form);
+
+    const loadingDiv = document.createElement('div');
+    loadingDiv.id = 'loading';
+    loadingDiv.style.display = 'none'; 
+    loadingDiv.innerHTML = '<img src="/loader.gif" alt="Cargando...">'; 
+    contentDiv.appendChild(loadingDiv);
 
     form.addEventListener('submit', handleCreateEvent);
 };
-

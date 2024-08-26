@@ -1,4 +1,5 @@
 import { API_URL } from '../services/ApiService';
+import './ConfirmedEventsComponent.css';
 
 export const renderConfirmedEvents = async () => {
     const contentDiv = document.getElementById('content');
@@ -29,13 +30,34 @@ export const renderConfirmedEvents = async () => {
                 noEventsMessage.textContent = 'No tienes eventos confirmados.';
                 contentDiv.appendChild(noEventsMessage);
             } else {
-                const ul = document.createElement('ul');
+                const eventsContainer = document.createElement('div');
+                eventsContainer.className = 'events-container';
+
                 events.forEach(event => {
-                    const li = document.createElement('li');
-                    li.textContent = event.title;
-                    ul.appendChild(li);
+                    const eventDiv = document.createElement('div');
+                    eventDiv.className = 'event-card';
+
+                    const title = document.createElement('h3');
+                    title.textContent = event.title;
+                    eventDiv.appendChild(title);
+
+                    const date = document.createElement('p');
+                    const eventDate = new Date(event.date);
+                    date.textContent = `Fecha: ${eventDate.toLocaleDateString()} ${eventDate.toLocaleTimeString()}`;
+                    eventDiv.appendChild(date);
+
+                    if (event.imageUrl) {
+                        const img = document.createElement('img');
+                        img.src = event.imageUrl;
+                        img.alt = 'Imagen del evento';
+                        img.className = 'event-image';
+                        eventDiv.appendChild(img);
+                    }
+
+                    eventsContainer.appendChild(eventDiv);
                 });
-                contentDiv.appendChild(ul);
+
+                contentDiv.appendChild(eventsContainer);
             }
         } else {
             console.log('Error al cargar eventos confirmados:', await response.text());
