@@ -1,4 +1,4 @@
-import { renderHome } from './HomeComponent';
+import { renderHome } from '../HomeComponent/HomeComponent';
 
 export const handleLogout = () => {
     localStorage.removeItem('token');

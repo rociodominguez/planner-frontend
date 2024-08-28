@@ -1,5 +1,5 @@
-import { renderRegister } from './RegisterComponent.js';
-import { renderLogin } from './LoginComponent.js';
+import { renderRegister } from '../Register/RegisterComponent.js';
+import { renderLogin } from '../Login/LoginComponent.js';
 import './HomeComponent.css';
 
 export const renderHome = () => {
@@ -30,7 +30,6 @@ export const renderHome = () => {
 
     appDiv.appendChild(buttonContainer);
 
-    // Añadir eventos a los botones
     registerBtn.addEventListener('click', renderRegister);
     loginBtn.addEventListener('click', renderLogin);
 };

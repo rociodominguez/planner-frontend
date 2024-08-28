@@ -1,4 +1,4 @@
-import { renderEvents } from '../components/EventsComponent';
+import { renderEvents } from '../components/EventsComponent/EventsComponent';
 import { API_URL } from '../services/ApiService';
 
 export const confirmAttendance = async (eventId) => {

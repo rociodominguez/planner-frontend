@@ -1,6 +1,6 @@
-import { API_URL } from '../services/ApiService.js';
-import { renderDashboard } from './DashboardComponent.js';
-import { renderHome } from './HomeComponent.js';
+import { API_URL, customFetch } from '../../services/ApiService.js';
+import { renderDashboard } from '../Dashboard/DashboardComponent.js';
+import { renderHome } from '../HomeComponent/HomeComponent.js';
 import './LoginComponent.css'
 
 const handleLogin = async (e) => {
@@ -12,31 +12,33 @@ const handleLogin = async (e) => {
     errorDiv.classList.remove('show');
 
     try {
-        const response = await fetch(`${API_URL}/users/login`, {
+        const data = await customFetch(`${API_URL}/users/login`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json' 
+            },
             body: JSON.stringify({ userName: username, password })
         });
 
-        if (response.ok) {
-            const data = await response.json();
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('role', data.role);
-            localStorage.setItem('username', username);
-            localStorage.setItem('userId', data.userId);
-            renderDashboard();
-        } else {
-            const errorData = await response.json();
-            errorDiv.textContent = `Error: ${errorData.error}`;
-            errorDiv.classList.add('show');
-        }
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('role', data.role);
+        localStorage.setItem('username', username);
+        localStorage.setItem('userId', data.userId);
+
+        renderDashboard();
     } catch (error) {
-        errorDiv.textContent = 'Error al iniciar sesión. Por favor, intenta de nuevo.';
+        errorDiv.textContent = `Error: ${error.message || 'Error al iniciar sesión. Por favor, intenta de nuevo.'}`;
         errorDiv.classList.add('show');
     }
 };
 
 export const renderLogin = () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        renderDashboard();
+        return;
+    }
+
     const appDiv = document.getElementById('app');
     appDiv.innerHTML = '';
 
@@ -52,7 +54,7 @@ export const renderLogin = () => {
         <label>Contraseña: <input type="password" id="password" /></label>
         <button type="submit">Iniciar Sesión</button>
         <div id="loginError" class="error-message"></div>
-        <button type="button" id="backToHome">Volver al Menú Principal</button> <!-- Nuevo botón -->
+        <button type="button" id="backToHome">Volver al Menú Principal</button>
     `;
 
     appDiv.appendChild(form);

@@ -1,5 +1,5 @@
-import { confirmAttendance, cancelAttendance, deleteEvent } from '../services/EventService.js';
-import { API_URL } from '../services/ApiService.js';
+import { confirmAttendance, cancelAttendance, deleteEvent } from '../../services/EventService.js';
+import { API_URL, customFetch } from '../../services/ApiService.js';
 import './EventsComponent.css';
 
 export const renderEvents = async () => {
@@ -13,11 +13,12 @@ export const renderEvents = async () => {
     const role = localStorage.getItem('role');
 
     try {
-        const response = await fetch(`${API_URL}/events`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+        const events = await customFetch(`${API_URL}/events`, {
+            method: 'GET',
+            headers: { 
+                'Authorization': `Bearer ${token}`
+            }
         });
-
-        const events = await response.json();
 
         contentDiv.innerHTML = '';
 

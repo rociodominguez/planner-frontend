@@ -1,6 +1,6 @@
-import { API_URL } from '../services/ApiService';
-import { renderEvents } from './EventsComponent';
-import './CreateEventComponent.css'
+import { API_URL, customFetch } from '../../services/ApiService'; 
+import { renderEvents } from '../EventsComponent/EventsComponent';
+import './CreateEventComponent.css';
 
 const handleCreateEvent = async (e) => {
     e.preventDefault();
@@ -18,14 +18,16 @@ const handleCreateEvent = async (e) => {
     formData.append('date', date);
     formData.append('imageUrl', imageFile);
 
-
     const loadingDiv = document.getElementById('loading');
-    if (loadingDiv) {
-        loadingDiv.style.display = 'block';
-    }
+    const errorDiv = document.getElementById('error');
+    const submitButton = document.getElementById('submitButton');
+
+    if (loadingDiv) loadingDiv.style.display = 'block';
+    if (errorDiv) errorDiv.style.display = 'none';
+    if (submitButton) submitButton.disabled = true;
 
     try {
-        const response = await fetch(`${API_URL}/events`, {
+        await customFetch(`${API_URL}/events`, {
             method: 'POST',
             headers: { 
                 'Authorization': `Bearer ${token}`,
@@ -33,21 +35,17 @@ const handleCreateEvent = async (e) => {
             body: formData
         });
 
-        if (response.ok) {
-            await renderEvents();
-        } else {
-            console.log('Error al crear evento:', await response.text());
-        }
+        await renderEvents();
     } catch (error) {
-        console.log('Error en la solicitud de creación de evento:', error);
-    } finally {
-        const loadingDiv = document.getElementById('loading');
-        if (loadingDiv) {
-            loadingDiv.style.display = 'none';
+        if (errorDiv) {
+            errorDiv.textContent = `Error al crear evento: ${error.message}`;
+            errorDiv.style.display = 'block';
         }
+    } finally {
+        if (loadingDiv) loadingDiv.style.display = 'none';
+        if (submitButton) submitButton.disabled = false;
     }
 };
-
 
 export const renderCreateEvent = () => {
     const contentDiv = document.getElementById('content');
@@ -64,8 +62,8 @@ export const renderCreateEvent = () => {
         <label>Título: <input type="text" id="title" /></label>
         <label>Descripción: <textarea id="description"></textarea></label>
         <label>Fecha y hora: <input type="datetime-local" id="date" /></label>
-        <label>Imagen: <input type="file" id="imageUrl" /></label> <!-- Cambiado a type="file" -->
-        <button type="submit">Crear Evento</button>
+        <label>Imagen: <input type="file" id="imageUrl" /></label>
+        <button type="submit" id="submitButton">Crear Evento</button>
     `;
 
     contentDiv.appendChild(form);
@@ -75,6 +73,12 @@ export const renderCreateEvent = () => {
     loadingDiv.style.display = 'none'; 
     loadingDiv.innerHTML = '<img src="/loader.gif" alt="Cargando...">'; 
     contentDiv.appendChild(loadingDiv);
+
+    const errorDiv = document.createElement('div');
+    errorDiv.id = 'error';
+    errorDiv.className = 'error-message';
+    errorDiv.style.display = 'none'; 
+    contentDiv.appendChild(errorDiv);
 
     form.addEventListener('submit', handleCreateEvent);
 };
