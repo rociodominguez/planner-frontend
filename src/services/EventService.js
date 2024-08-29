@@ -1,10 +1,10 @@
 import { renderEvents } from '../components/EventsComponent/EventsComponent';
-import { API_URL } from '../services/ApiService';
+import { API_URL, customFetch } from '../services/ApiService';
 
 export const confirmAttendance = async (eventId) => {
     const token = localStorage.getItem('token');
     try {
-        const response = await fetch(`${API_URL}/events/${eventId}/attendants`, {
+        await customFetch(`${API_URL}/events/${eventId}/attendants`, {
             method: 'POST',
             headers: { 
                 'Authorization': `Bearer ${token}`,
@@ -13,20 +13,16 @@ export const confirmAttendance = async (eventId) => {
             body: JSON.stringify({})
         });
 
-        if (response.ok) {
-            renderEvents();
-        } else {
-            console.log('Error al confirmar la asistencia:', await response.text());
-        }
+        renderEvents(); 
     } catch (error) {
-        console.log('Error en la solicitud de confirmación de asistencia:', error);
+        console.log('Error al confirmar la asistencia:', error);
     }
 };
 
 export const cancelAttendance = async (eventId) => {
     const token = localStorage.getItem('token');
     try {
-        const response = await fetch(`${API_URL}/events/${eventId}/attendants`, {
+        await customFetch(`${API_URL}/events/${eventId}/attendants`, {
             method: 'DELETE',
             headers: { 
                 'Authorization': `Bearer ${token}`,
@@ -35,30 +31,22 @@ export const cancelAttendance = async (eventId) => {
             body: JSON.stringify({ userId: localStorage.getItem('userId') })
         });
 
-        if (response.ok) {
-            renderEvents();
-        } else {
-            console.log('Error al cancelar la asistencia:', await response.text());
-        }
+        renderEvents();  
     } catch (error) {
-        console.log('Error en la solicitud de cancelación de asistencia:', error);
+        console.log('Error al cancelar la asistencia:', error);
     }
 };
 
 export const deleteEvent = async (eventId) => {
     const token = localStorage.getItem('token');
     try {
-        const response = await fetch(`${API_URL}/events/${eventId}`, {
+        await customFetch(`${API_URL}/events/${eventId}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
-        if (response.ok) {
-            renderEvents();
-        } else {
-            console.log('Error al eliminar el evento:', await response.text());
-        }
+        renderEvents(); 
     } catch (error) {
-        console.log('Error en la solicitud de eliminación de evento:', error);
+        console.log('Error al eliminar el evento:', error);
     }
 };

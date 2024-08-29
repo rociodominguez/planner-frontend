@@ -5,12 +5,13 @@ import { renderHome } from '../HomeComponent/HomeComponent.js';
 
 const handleRegister = async (e) => {
     e.preventDefault();
-    
+
     const username = document.getElementById('username').value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const errorDiv = document.getElementById('registerError');
-    
+    const loaderDiv = document.getElementById('registerLoader');
+
     if (errorDiv) {
         errorDiv.textContent = '';
         errorDiv.classList.remove('show');
@@ -28,6 +29,8 @@ const handleRegister = async (e) => {
         return;
     }
 
+    loaderDiv.style.display = 'block'; // Muestra el loader
+
     try {
         await customFetch(`${API_URL}/users/register`, {
             method: 'POST',
@@ -40,6 +43,8 @@ const handleRegister = async (e) => {
         errorDiv.textContent = `Error: ${error.message}`;
         errorDiv.classList.add('show');
         console.log('Error en la solicitud de registro:', error);
+    } finally {
+        loaderDiv.style.display = 'none'; // Oculta el loader
     }
 };
 
@@ -64,6 +69,9 @@ export const renderRegister = () => {
         <label>Email: <input type="email" id="email" /></label>
         <label>Contraseña: <input type="password" id="password" /></label>
         <button type="submit">Registrar</button>
+        <div id="registerLoader" class="loader" style="display: none;">
+            <img src="/loader.gif" alt="Cargando..." style="width: 30px; height: 30px;">
+        </div>
         <div id="registerError" class="error-message"></div> <!-- Div para mostrar errores -->
         <button type="button" id="backToHome">Volver al Menú Principal</button>
     `;

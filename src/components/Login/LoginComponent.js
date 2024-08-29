@@ -1,7 +1,7 @@
 import { API_URL, customFetch } from '../../services/ApiService.js';
 import { renderDashboard } from '../Dashboard/DashboardComponent.js';
 import { renderHome } from '../HomeComponent/HomeComponent.js';
-import './LoginComponent.css'
+import './LoginComponent.css';
 
 const handleLogin = async (e) => {
     e.preventDefault();
@@ -9,7 +9,10 @@ const handleLogin = async (e) => {
     const password = document.getElementById('password').value;
 
     const errorDiv = document.getElementById('loginError');
+    const loaderDiv = document.getElementById('loginLoader');
+
     errorDiv.classList.remove('show');
+    loaderDiv.style.display = 'block'; // Muestra el loader
 
     try {
         const data = await customFetch(`${API_URL}/users/login`, {
@@ -29,6 +32,8 @@ const handleLogin = async (e) => {
     } catch (error) {
         errorDiv.textContent = `Error: ${error.message || 'Error al iniciar sesión. Por favor, intenta de nuevo.'}`;
         errorDiv.classList.add('show');
+    } finally {
+        loaderDiv.style.display = 'none'; // Oculta el loader
     }
 };
 
@@ -53,7 +58,9 @@ export const renderLogin = () => {
         <label>Nombre de usuario: <input type="text" id="username" /></label>
         <label>Contraseña: <input type="password" id="password" /></label>
         <button type="submit">Iniciar Sesión</button>
-        <div id="loginError" class="error-message"></div>
+ <div id="loginLoader" class="loader" style="display: none;">
+            <img src="/loader.gif" alt="Cargando..." style="width: 30px; height: 30px;">
+        </div>        <div id="loginError" class="error-message"></div>
         <button type="button" id="backToHome">Volver al Menú Principal</button>
     `;
 
