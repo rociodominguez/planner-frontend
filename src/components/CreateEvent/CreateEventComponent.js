@@ -27,6 +27,10 @@ const handleCreateEvent = async (e) => {
     if (submitButton) submitButton.disabled = true;
 
     try {
+        if (!title || !description || !date || !imageFile) {
+            throw new Error('Todos los campos son obligatorios. Asegúrate de completar todos los campos.');
+        }
+
         await customFetch(`${API_URL}/events`, {
             method: 'POST',
             headers: { 
@@ -38,7 +42,13 @@ const handleCreateEvent = async (e) => {
         await renderEvents();
     } catch (error) {
         if (errorDiv) {
-            errorDiv.textContent = `Error al crear evento: ${error.message}`;
+            if (error.message.includes('obligatorios')) {
+                errorDiv.textContent = 'Todos los campos son obligatorios. Por favor, completa todos los campos y vuelve a intentarlo.';
+            } else if (error.message.includes('Imagen')) {
+                errorDiv.textContent = 'La imagen debe estar en un formato aceptable. Verifica el archivo y vuelve a intentarlo.';
+            } else {
+                errorDiv.textContent = `Error al crear el evento: ${error.message || 'Por favor, intenta de nuevo más tarde.'}`;
+            }
             errorDiv.style.display = 'block';
         }
     } finally {

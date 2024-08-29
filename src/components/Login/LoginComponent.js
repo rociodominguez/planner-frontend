@@ -12,7 +12,16 @@ const handleLogin = async (e) => {
     const loaderDiv = document.getElementById('loginLoader');
 
     errorDiv.classList.remove('show');
-    loaderDiv.style.display = 'block'; // Muestra el loader
+    errorDiv.textContent = ''; 
+    loaderDiv.style.display = 'block';
+
+
+    if (!username || !password) {
+        loaderDiv.style.display = 'none';
+        errorDiv.textContent = 'Por favor, ingresa tu nombre de usuario y contraseña.';
+        errorDiv.classList.add('show');
+        return;
+    }
 
     try {
         const data = await customFetch(`${API_URL}/users/login`, {
@@ -30,10 +39,22 @@ const handleLogin = async (e) => {
 
         renderDashboard();
     } catch (error) {
-        errorDiv.textContent = `Error: ${error.message || 'Error al iniciar sesión. Por favor, intenta de nuevo.'}`;
+        loaderDiv.style.display = 'none';
+
+        if (error.message.includes('401')) {
+            errorDiv.textContent = 'Nombre de usuario o contraseña incorrectos. Verifica tus credenciales e intenta nuevamente.';
+        } else if (error.message.includes('404')) {
+            errorDiv.textContent = 'No se encontró una cuenta con ese nombre de usuario. Por favor, verifica e intenta de nuevo.';
+        } else if (error.message.includes('500')) {
+            errorDiv.textContent = 'Hubo un problema con el servidor. Por favor, intenta nuevamente más tarde.';
+        } else {
+            errorDiv.textContent = 'Ocurrió un error al intentar iniciar sesión. Por favor, intenta de nuevo.';
+        }
+
         errorDiv.classList.add('show');
+        console.log('Error en la solicitud de inicio de sesión:', error);
     } finally {
-        loaderDiv.style.display = 'none'; // Oculta el loader
+        loaderDiv.style.display = 'none';
     }
 };
 
@@ -58,9 +79,10 @@ export const renderLogin = () => {
         <label>Nombre de usuario: <input type="text" id="username" /></label>
         <label>Contraseña: <input type="password" id="password" /></label>
         <button type="submit">Iniciar Sesión</button>
- <div id="loginLoader" class="loader" style="display: none;">
+        <div id="loginLoader" class="loader" style="display: none;">
             <img src="/loader.gif" alt="Cargando..." style="width: 30px; height: 30px;">
-        </div>        <div id="loginError" class="error-message"></div>
+        </div>
+        <div id="loginError" class="error-message"></div>
         <button type="button" id="backToHome">Volver al Menú Principal</button>
     `;
 

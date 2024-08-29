@@ -17,6 +17,7 @@ const handleRegister = async (e) => {
         errorDiv.classList.remove('show');
     }
 
+    
     if (!username || !email || !password) {
         errorDiv.textContent = 'Todos los campos son obligatorios.';
         errorDiv.classList.add('show');
@@ -29,22 +30,29 @@ const handleRegister = async (e) => {
         return;
     }
 
-    loaderDiv.style.display = 'block'; // Muestra el loader
+    loaderDiv.style.display = 'block'; 
 
     try {
-        await customFetch(`${API_URL}/users/register`, {
+        const response = await customFetch(`${API_URL}/users/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userName: username, email, password })
         });
 
-        renderLogin();
+      
+        if (response.ok) {
+            renderLogin(); 
+        } else {
+            const errorData = await response.json();
+            errorDiv.textContent = errorData.message || 'Error desconocido durante el registro.';
+            errorDiv.classList.add('show');
+        }
     } catch (error) {
         errorDiv.textContent = `Error: ${error.message}`;
         errorDiv.classList.add('show');
         console.log('Error en la solicitud de registro:', error);
     } finally {
-        loaderDiv.style.display = 'none'; // Oculta el loader
+        loaderDiv.style.display = 'none'; 
     }
 };
 
