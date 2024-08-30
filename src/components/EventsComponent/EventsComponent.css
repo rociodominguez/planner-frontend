@@ -1,96 +1,62 @@
-#content {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-#content h2 {
-    margin-bottom: 20px;
-    font-size: 1.5em;
-    color: var(--text-color);
-}
-
 .event-cards-container {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
     gap: 20px;
+    justify-content: center;
+    padding: 20px;
+    border-radius: 5px;
 }
 
 .event-card {
-    width: 300px; 
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    background-color: var(--background-color);
-    box-shadow: 0 4px 8px var(--shadow);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 300px;
+    cursor: pointer;
+}
+
+.event-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .event-card img {
     width: 100%;
-    height: 200px; 
-    object-fit: cover; 
+    height: 200px;
+    object-fit: cover;
     display: block;
-    border-bottom: 1px solid var(--border);
 }
 
 .event-card-content {
+    padding: 15px;
+}
+
+.event-card-content h3 {
+    margin: 0 0 10px;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.event-card-content p {
+    margin: 0 0 10px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.event-card button {
+    background-color: var(--button);
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.875rem;
     padding: 10px;
-    width: 100%; 
-}
-
-.event-card h3 {
-    margin: 10px 0;
-    font-size: 1.2em;
-    color: var(--text-color);
-}
-
-.event-card p {
     margin: 5px 0;
-    color: var(--card);
+    transition: background-color 0.3s ease;
 }
 
-.event-confirm-btn {
-    background-color: #28a745; 
-    color: #fff;
-}
-
-.event-confirm-btn:hover {
-    background-color: #218838;
-}
-
-.event-confirm-btn:active {
-    background-color: #1e7e34; 
-}
-
-.event-cancel-btn {
-    background-color: #dc3545; 
-    color: #fff;
-}
-
-.event-cancel-btn:hover {
-    background-color: #c82333; 
-}
-
-.event-cancel-btn:active {
-    background-color: #bd2130;
-}
-
-.event-delete-btn {
-    background-color: #dc3545; 
-    color: #fff;
-}
-
-.event-delete-btn:hover {
-    background-color: #c82333; 
-}
-
-.event-delete-btn:active {
-    background-color: #bd2130;
+.event-card button:hover {
+    background-color: var(--hover);
 }

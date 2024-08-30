@@ -1,7 +1,6 @@
 import { renderLogin } from '../Login/LoginComponent.js';
 import { API_URL, customFetch } from '../../services/ApiService.js';
 import './RegisterComponent.css';
-import { renderHome } from '../HomeComponent/HomeComponent.js';
 
 const handleRegister = async (e) => {
     e.preventDefault();
@@ -17,7 +16,6 @@ const handleRegister = async (e) => {
         errorDiv.classList.remove('show');
     }
 
-    
     if (!username || !email || !password) {
         errorDiv.textContent = 'Todos los campos son obligatorios.';
         errorDiv.classList.add('show');
@@ -33,20 +31,14 @@ const handleRegister = async (e) => {
     loaderDiv.style.display = 'block'; 
 
     try {
-        const response = await customFetch(`${API_URL}/users/register`, {
+        const responseData = await customFetch(`${API_URL}/users/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userName: username, email, password })
         });
 
-      
-        if (response.ok) {
-            renderLogin(); 
-        } else {
-            const errorData = await response.json();
-            errorDiv.textContent = errorData.message || 'Error desconocido durante el registro.';
-            errorDiv.classList.add('show');
-        }
+        renderLogin(); 
+
     } catch (error) {
         errorDiv.textContent = `Error: ${error.message}`;
         errorDiv.classList.add('show');
@@ -65,27 +57,52 @@ export const renderRegister = () => {
     const appDiv = document.getElementById('app');
     appDiv.innerHTML = '';
 
-    const header = document.createElement('h2');
-    header.textContent = 'Registro';
-    appDiv.appendChild(header);
-
     const form = document.createElement('form');
-    form.id = 'registerForm';
+    form.className = 'form';  
 
     form.innerHTML = `
-        <label>Nombre de usuario: <input type="text" id="username" /></label>
-        <label>Email: <input type="email" id="email" /></label>
-        <label>Contraseña: <input type="password" id="password" /></label>
-        <button type="submit">Registrar</button>
+        <p class="form-title">Crea tu cuenta</p>
+        <div class="input-container">
+            <input placeholder="Usuario" type="text" id="username" />
+            <span>
+                <svg stroke="currentColor" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></path>
+                </svg>
+            </span>
+        </div>
+        <div class="input-container">
+            <input placeholder="Correo electrónico" type="email" id="email" />
+            <span>
+                <svg stroke="currentColor" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></path>
+                </svg>
+            </span>
+        </div>
+        <div class="input-container">
+            <input placeholder="Contraseña" type="password" id="password" />
+            <span>
+                <svg stroke="currentColor" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></path>
+                    <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></path>
+                </svg>
+            </span>
+        </div>
+        <button class="submit" type="submit">Regístrate</button>
         <div id="registerLoader" class="loader" style="display: none;">
             <img src="/loader.gif" alt="Cargando..." style="width: 30px; height: 30px;">
         </div>
-        <div id="registerError" class="error-message"></div> <!-- Div para mostrar errores -->
-        <button type="button" id="backToHome">Volver al Menú Principal</button>
+        <div id="registerError" class="error-message"></div>
+        <p class="signup-link">
+            ¿Ya tienes una cuenta?
+            <a href="#" id="backToLogin">Acceder</a>
+        </p>
     `;
 
     appDiv.appendChild(form);
     form.addEventListener('submit', handleRegister);
 
-    document.getElementById('backToHome').addEventListener('click', renderHome);
+    document.getElementById('backToLogin').addEventListener('click', (e) => {
+        e.preventDefault();
+        renderLogin();
+    });
 };

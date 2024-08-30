@@ -1,6 +1,5 @@
 export const API_URL = 'https://planner-backend-puce.vercel.app/api/v1';
 
-
 const customFetch = async (url, options = {}) => {
     const { method = 'GET', headers = {}, body = null } = options;
 
@@ -23,7 +22,7 @@ const customFetch = async (url, options = {}) => {
         throw new Error(errorText || 'Network response was not ok');
     }
 
-    return response.json();
+    return response.json(); 
 };
 
 export { customFetch };

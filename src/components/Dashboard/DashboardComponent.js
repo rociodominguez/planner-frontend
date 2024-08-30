@@ -9,13 +9,22 @@ export const renderDashboard = async () => {
     const appDiv = document.getElementById('app');
     appDiv.innerHTML = '';
 
-    const header = document.createElement('h2');
-    header.textContent = 'Dashboard';
-    appDiv.appendChild(header);
+
+    const bgDiv = document.createElement('div');
+    bgDiv.className = 'bg-5';
+    
+    const heading = document.createElement('h1');
+    heading.className = 'animated-shadow';
+    heading.textContent = 'MyPlanner';
+    
+    bgDiv.appendChild(heading);
+    appDiv.appendChild(bgDiv);
+    
+    
 
     const userInfo = document.createElement('p');
     const username = localStorage.getItem('username');
-    userInfo.textContent = `🟢 ${username ? username : 'No estás logueado'}`;
+    userInfo.textContent = `🖐 Hola ${username ? username : 'No estás logueado'}`;
     appDiv.appendChild(userInfo);
 
     const nav = document.createElement('nav');

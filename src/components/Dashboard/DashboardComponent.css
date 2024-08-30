@@ -1,28 +1,118 @@
-nav {
-    margin-bottom: 10px;
-}
-
 .nav-menu {
-    list-style: none;
-    padding: 0;
+    list-style-type: none;
+    padding: 10px;
     margin: 0;
     display: flex;
-    flex-wrap: wrap; 
+    justify-content: center;
+    background-color: #292929;
+    opacity: 75%;
+    border-radius: 5px;
 }
 
 .nav-menu li {
-    margin-right: 1px; 
+    margin: 0 25px;
 }
 
 .nav-menu a {
     text-decoration: none;
-    color: var(--button-color); 
-    font-weight: bold;
+    color: #fff;
+    font-size: 16px;
     padding: 10px 15px;
-    display: block; 
-    font-size: 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.nav-menu a:hover {
-    text-decoration: underline; 
+.nav-menu a:hover,
+.nav-menu a:focus {
+    background-color: #4e4e4e;
+    color: #f0f0f0;
+    outline: none;
+}
+
+.animated-shadow {
+    color: #ffffff;
+    font: normal 30px Varela Round, sans-serif;
+    left: 0;
+    letter-spacing: 2px; 
+    text-align: center;
+    text-transform: uppercase;
+    width: 100%;
+    animation: move linear 2000ms infinite; 
+    z-index: 2;
+}
+
+
+/* Define las variables de color */
+:root {
+    --color1: #292929; /* Primer color */
+    --color2: #e0e0e0; /* Segundo color */
+  }
+  
+  @keyframes move {
+    0% {
+      text-shadow:
+        4px -4px 0 var(--color1),
+        3px -3px 0 var(--color1),
+        2px -2px 0 var(--color1),
+        1px -1px 0 var(--color1),
+        -4px 4px 0 var(--color2),
+        -3px 3px 0 var(--color2),
+        -2px 2px 0 var(--color2),
+        -1px 1px 0 var(--color2);
+    }
+    25% {
+      text-shadow:
+        -4px -4px 0 var(--color2),
+        -3px -3px 0 var(--color2),
+        -2px -2px 0 var(--color2),
+        -1px -1px 0 var(--color2),
+        4px 4px 0 var(--color1),
+        3px 3px 0 var(--color1),
+        2px 2px 0 var(--color1),
+        1px 1px 0 var(--color1);
+    }
+    50% {
+      text-shadow:
+        -4px 4px 0 var(--color1),
+        -3px 3px 0 var(--color1),
+        -2px 2px 0 var(--color1),
+        -1px 1px 0 var(--color1),
+        4px -4px 0 var(--color2),
+        3px -3px 0 var(--color2),
+        2px -2px 0 var(--color2),
+        1px -1px 0 var(--color2);
+    }
+    75% {
+      text-shadow:
+        4px 4px 0 var(--color2),
+        3px 3px 0 var(--color2),
+        2px 2px 0 var(--color2),
+        1px 1px 0 var(--color2),
+        -4px -4px 0 var(--color1),
+        -3px -3px 0 var(--color1),
+        -2px -2px 0 var(--color1),
+        -1px -1px 0 var(--color1);
+    }
+    100% {
+      text-shadow:
+        4px -4px 0 var(--color1),
+        3px -3px 0 var(--color1),
+        2px -2px 0 var(--color1),
+        1px -1px 0 var(--color1),
+        -4px 4px 0 var(--color2),
+        -3px 3px 0 var(--color2),
+        -2px 2px 0 var(--color2),
+        -1px 1px 0 var(--color2);
+    }
+  }
+  
+
+@media (max-width: 768px) {
+    .nav-menu a {
+        font-size: 12px;
+}
+.nav-menu {
+justify-content: center;}
+
+
 }

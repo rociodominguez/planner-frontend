@@ -1,80 +1,26 @@
-:root {
-  --main-color: #fff;
-  --button-color: #007bff;
-  --text-color: #333;
-  --background-color: #f4f4f4;
-  --shadow: rgba(0, 0, 0, 0.1);
-  --button-hover: #0056b3;
-  --succes: #28a745;
-  --error: #dc3545;
-  --border: #ccc;
-  --card: #666;
-  --delete: #ff9800;
-  --selection: #9b9b9b;
-}
-
 body {
-  font-family: Arial, sans-serif;
-  background-color: var(--background-color);
   margin: 0;
   padding: 0;
+  font-family: Arial, sans-serif;
+  background-image: url("data:image/svg+xml,<svg id='patternId' width='100%' height='100%' xmlns='http://www.w3.org/2000/svg'><defs><pattern id='a' patternUnits='userSpaceOnUse' width='40' height='40' patternTransform='scale(2) rotate(0)'><rect x='0' y='0' width='100%' height='100%' fill='hsla(0,0%,100%,1)'/><path d='M20-5V5m0 30v10m20-30v10M0 15v10'  stroke-linecap='square' stroke-width='1' stroke='hsla(259, 0%, 91%, 1)' fill='none'/><path d='M-5 40H5M-5 0H5m30 0h10M35 40h10M15 20h10'  stroke-linecap='square' stroke-width='1' stroke='hsla(340, 0%, 94%, 1)' fill='none'/></pattern></defs><rect width='800%' height='800%' transform='translate(0,0)' fill='url(%23a)'/></svg>");
+  background-repeat: repeat;
+  background-size: cover;
 }
 
-#app {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: var(--main-color);
-  border-radius: 8px;
-  box-shadow: 0 0 10px var(--shadow);
+:root {
+  --button: #4F46E5;
+  --hover: #5f57f3;
+  --background: rgba(232, 232, 232, 0.536);
 }
-
-h1, h2 {
-  color: var(--text-color);
-}
-
-h1 {
-  text-align: center;
-}
-
 
 button {
-  background-color: var(--button-color);
-  color: var(--main-color);
-  border: none;
-  border-radius: 4px;
-  padding: 10px 20px;
-  margin: 5px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-button:hover {
-  background-color: var(--button-hover);
-}
-
-
-.alert {
   padding: 10px;
-  color: var(--main-color);
-  border-radius: 4px;
-  margin: 10px 0;
+  margin: 5px;
+  background-color: #4F46E5;
+  color: aliceblue;
 }
 
-.alert-success {
-  background-color: var(--succes);
+button:hover{
+  background-color: #5f57f3;
 }
 
-.alert-error {
-  background-color: var(--error);
-}
-
-.error-message {
-  color: var(--error);
-  margin-top: 10px;
-  display: none;
-}
-
-.error-message.show {
-  display: block;
-}
