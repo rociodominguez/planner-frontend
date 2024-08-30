@@ -42,10 +42,9 @@
 }
 
 
-/* Define las variables de color */
 :root {
-    --color1: #292929; /* Primer color */
-    --color2: #e0e0e0; /* Segundo color */
+    --color1: #292929;
+    --color2: #e0e0e0;
   }
   
   @keyframes move {

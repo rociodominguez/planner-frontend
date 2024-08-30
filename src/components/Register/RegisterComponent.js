@@ -16,19 +16,32 @@ const handleRegister = async (e) => {
         errorDiv.classList.remove('show');
     }
 
-    if (!username || !email || !password) {
-        errorDiv.textContent = 'Todos los campos son obligatorios.';
+    // Validaciones
+    if (!username) {
+        errorDiv.textContent = 'Por favor, ingresa un nombre de usuario.';
+        errorDiv.classList.add('show');
+        return;
+    }
+
+    if (!email) {
+        errorDiv.textContent = 'Por favor, ingresa tu correo electrónico.';
+        errorDiv.classList.add('show');
+        return;
+    }
+
+    if (!password) {
+        errorDiv.textContent = 'Por favor, ingresa una contraseña.';
         errorDiv.classList.add('show');
         return;
     }
 
     if (!validateEmail(email)) {
-        errorDiv.textContent = 'Email no válido.';
+        errorDiv.textContent = 'El formato del correo electrónico es incorrecto. Asegúrate de que tenga el formato correcto: ejemplo@dominio.com';
         errorDiv.classList.add('show');
         return;
     }
 
-    loaderDiv.style.display = 'block'; 
+    loaderDiv.style.display = 'block';
 
     try {
         const responseData = await customFetch(`${API_URL}/users/register`, {
@@ -37,14 +50,20 @@ const handleRegister = async (e) => {
             body: JSON.stringify({ userName: username, email, password })
         });
 
-        renderLogin(); 
+        if (responseData.error) {
+            errorDiv.textContent = `Error: ${responseData.error.message}`;
+            errorDiv.classList.add('show');
+            return;
+        }
+
+        renderLogin();
 
     } catch (error) {
-        errorDiv.textContent = `Error: ${error.message}`;
+        errorDiv.textContent = 'Hubo un problema al intentar registrarte. Por favor, intenta de nuevo más tarde.';
         errorDiv.classList.add('show');
         console.log('Error en la solicitud de registro:', error);
     } finally {
-        loaderDiv.style.display = 'none'; 
+        loaderDiv.style.display = 'none';
     }
 };
 

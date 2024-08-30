@@ -1,7 +1,7 @@
 .event-cards-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 5px;
     justify-content: center;
     padding: 20px;
     border-radius: 5px;

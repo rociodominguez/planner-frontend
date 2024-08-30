@@ -27,8 +27,22 @@ const handleCreateEvent = async (e) => {
     if (submitButton) submitButton.disabled = true;
 
     try {
+        // Validaciones
         if (!title || !description || !date || !imageFile) {
-            throw new Error('Todos los campos son obligatorios. Asegúrate de completar todos los campos.');
+            throw new Error('Campos vacíos');
+        }
+
+        // Validación de formato de imagen
+        const allowedFormats = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!allowedFormats.includes(imageFile.type)) {
+            throw new Error('Imagen no válida');
+        }
+
+        // Validación de la fecha
+        const eventDate = new Date(date);
+        const currentDate = new Date();
+        if (eventDate < currentDate) {
+            throw new Error('Fecha no válida');
         }
 
         await customFetch(`${API_URL}/events`, {
@@ -42,12 +56,19 @@ const handleCreateEvent = async (e) => {
         await renderEvents();
     } catch (error) {
         if (errorDiv) {
-            if (error.message.includes('obligatorios')) {
-                errorDiv.textContent = 'Todos los campos son obligatorios. Por favor, completa todos los campos y vuelve a intentarlo.';
-            } else if (error.message.includes('Imagen')) {
-                errorDiv.textContent = 'La imagen debe estar en un formato aceptable. Verifica el archivo y vuelve a intentarlo.';
-            } else {
-                errorDiv.textContent = `Error al crear el evento: ${error.message || 'Por favor, intenta de nuevo más tarde.'}`;
+            switch (error.message) {
+                case 'Campos vacíos':
+                    errorDiv.textContent = 'Todos los campos son obligatorios. Por favor, completa todos los campos y vuelve a intentarlo.';
+                    break;
+                case 'Imagen no válida':
+                    errorDiv.textContent = 'La imagen debe ser en formato JPEG, PNG o GIF. Por favor, selecciona un archivo válido.';
+                    break;
+                case 'Fecha no válida':
+                    errorDiv.textContent = 'La fecha del evento debe ser una fecha futura. Por favor, selecciona una fecha válida.';
+                    break;
+                default:
+                    errorDiv.textContent = `Error al crear el evento.`
+                    break;
             }
             errorDiv.style.display = 'block';
         }
@@ -68,11 +89,14 @@ export const renderCreateEvent = () => {
     const form = document.createElement('form');
     form.id = 'createEventForm';
 
+    // Obtener la fecha actual en formato YYYY-MM-DD
+    const today = new Date().toISOString().split('T')[0];
+
     form.innerHTML = `
-        <label>Título: <input type="text" id="title" /></label>
-        <label>Descripción: <textarea id="description"></textarea></label>
-        <label>Fecha y hora: <input type="datetime-local" id="date" /></label>
-        <label>Imagen: <input type="file" id="imageUrl" /></label>
+        <label>Título: <input type="text" id="title" required /></label>
+        <label>Descripción: <textarea id="description" required></textarea></label>
+        <label>Fecha y hora: <input type="datetime-local" id="date" min="${today}T00:00" required /></label>
+        <label>Imagen: <input type="file" id="imageUrl" accept="image/jpeg, image/png, image/gif" required /></label>
         <button type="submit" id="submitButton">Crear Evento</button>
     `;
 

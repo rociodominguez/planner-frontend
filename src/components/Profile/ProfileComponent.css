@@ -1,12 +1,3 @@
-#content {
-    padding: 10px; /* Reducido desde 20px */
-    max-width: 1000px;
-    margin: 0 auto;
-    background-color: var(--background);
-    border-radius: 8px;
-    box-sizing: border-box; 
-}
-
 #updateProfileForm {
     display: flex;
     flex-direction: column;
