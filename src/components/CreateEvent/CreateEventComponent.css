@@ -1,4 +1,10 @@
+#content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(232, 232, 232, 0.536);
 
+  }
   
   #createEventForm {
     background-color: #ffffff;
