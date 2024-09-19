@@ -38,7 +38,6 @@ const handleCreateEvent = async (e) => {
             throw new Error('Imagen no válida');
         }
 
-        // Validación de la fecha
         const eventDate = new Date(date);
         const currentDate = new Date();
         if (eventDate < currentDate) {
@@ -89,7 +88,6 @@ export const renderCreateEvent = () => {
     const form = document.createElement('form');
     form.id = 'createEventForm';
 
-    // Obtener la fecha actual en formato YYYY-MM-DD
     const today = new Date().toISOString().split('T')[0];
 
     form.innerHTML = `

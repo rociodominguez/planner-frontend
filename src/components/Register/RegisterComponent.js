@@ -4,68 +4,56 @@ import './RegisterComponent.css';
 
 const handleRegister = async (e) => {
     e.preventDefault();
-
+  
     const username = document.getElementById('username').value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const errorDiv = document.getElementById('registerError');
     const loaderDiv = document.getElementById('registerLoader');
-
+  
     if (errorDiv) {
-        errorDiv.textContent = '';
-        errorDiv.classList.remove('show');
+      errorDiv.textContent = '';
+      errorDiv.classList.remove('show');
     }
-
-    // Validaciones
-    if (!username) {
-        errorDiv.textContent = 'Por favor, ingresa un nombre de usuario.';
-        errorDiv.classList.add('show');
-        return;
-    }
-
-    if (!email) {
-        errorDiv.textContent = 'Por favor, ingresa tu correo electrónico.';
-        errorDiv.classList.add('show');
-        return;
-    }
-
-    if (!password) {
-        errorDiv.textContent = 'Por favor, ingresa una contraseña.';
-        errorDiv.classList.add('show');
-        return;
-    }
-
-    if (!validateEmail(email)) {
-        errorDiv.textContent = 'El formato del correo electrónico es incorrecto. Asegúrate de que tenga el formato correcto: ejemplo@dominio.com';
-        errorDiv.classList.add('show');
-        return;
-    }
-
+  
     loaderDiv.style.display = 'block';
-
+  
     try {
-        const responseData = await customFetch(`${API_URL}/users/register`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userName: username, email, password })
-        });
-
-        if (responseData.error) {
-            errorDiv.textContent = `Error: ${responseData.error.message}`;
-            errorDiv.classList.add('show');
-            return;
+      const response = await customFetch(`${API_URL}/users/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userName: username, email, password })
+      });
+  
+      const responseData = await response.json();
+  
+      // Manejar los diferentes códigos de estado
+      if (!response.ok) {
+        if (response.status === 400) {
+          errorDiv.textContent = 'Todos los campos son obligatorios.';
+        } else if (response.status === 409 && responseData.error.includes('nombre de usuario')) {
+          errorDiv.textContent = 'El nombre de usuario ya está en uso. Por favor, elige otro.';
+        } else if (response.status === 409 && responseData.error.includes('correo electrónico')) {
+          errorDiv.textContent = 'El correo electrónico ya está en uso. Por favor, elige otro.';
+        } else {
+          errorDiv.textContent = `Error: ${responseData.error}`;
         }
-
-        renderLogin();
-
-    } catch (error) {
-        errorDiv.textContent = 'Hubo un problema al intentar registrarte. Por favor, intenta de nuevo más tarde.';
         errorDiv.classList.add('show');
-        console.log('Error en la solicitud de registro:', error);
+        return;
+      }
+  
+      // Si el registro fue exitoso, redirigir al login
+      renderLogin();
+  
+    } catch (error) {
+      errorDiv.textContent = 'Hubo un problema al intentar registrarte. Por favor, intenta de nuevo más tarde.';
+      errorDiv.classList.add('show');
+      console.log('Error en la solicitud de registro:', error);
     } finally {
-        loaderDiv.style.display = 'none';
+      loaderDiv.style.display = 'none';
     }
-};
+  };
+  
 
 const validateEmail = (email) => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

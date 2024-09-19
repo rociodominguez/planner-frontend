@@ -23,7 +23,7 @@ const handleLogin = async (e) => {
     }
 
     try {
-        const data = await customFetch(`${API_URL}/users/login`, {
+        const response = await fetch(`${API_URL}/users/login`, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json' 
@@ -31,6 +31,14 @@ const handleLogin = async (e) => {
             body: JSON.stringify({ userName: username, password })
         });
 
+        // Verificar si la respuesta fue exitosa
+        if (!response.ok) {
+            const data = await response.json();
+            throw new Error(data.error || 'Error en el inicio de sesión');
+        }
+
+        const data = await response.json();
+        
         localStorage.setItem('token', data.token);
         localStorage.setItem('role', data.role);
         localStorage.setItem('username', username);
@@ -40,22 +48,15 @@ const handleLogin = async (e) => {
     } catch (error) {
         loaderDiv.style.display = 'none';
 
-        if (error.message.includes('401')) {
-            errorDiv.textContent = 'Nombre de usuario o contraseña incorrectos. Verifica tus credenciales e intenta nuevamente.';
-        } else if (error.message.includes('404')) {
-            errorDiv.textContent = 'No se encontró una cuenta con ese nombre de usuario. Por favor, verifica e intenta de nuevo.';
-        } else if (error.message.includes('500')) {
-            errorDiv.textContent = 'Hubo un problema con el servidor. Por favor, intenta nuevamente más tarde.';
-        } else {
-            errorDiv.textContent = 'Ocurrió un error al intentar iniciar sesión. Por favor, intenta de nuevo.';
-        }
-
+        // Mostrar el mensaje de error específico
+        errorDiv.textContent = error.message || 'Ocurrió un error al intentar iniciar sesión. Por favor, intenta de nuevo.';
         errorDiv.classList.add('show');
         console.log('Error en la solicitud de inicio de sesión:', error);
     } finally {
         loaderDiv.style.display = 'none';
     }
 };
+
 
 export const renderLogin = () => {
     const token = localStorage.getItem('token');
