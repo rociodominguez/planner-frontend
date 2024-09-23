@@ -7,56 +7,53 @@ const handleLogin = async (e) => {
     e.preventDefault();
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
-
+  
     const errorDiv = document.getElementById('loginError');
     const loaderDiv = document.getElementById('loginLoader');
-
+  
     errorDiv.classList.remove('show');
     errorDiv.textContent = ''; 
     loaderDiv.style.display = 'block';
-
+  
     if (!username || !password) {
-        loaderDiv.style.display = 'none';
-        errorDiv.textContent = 'Por favor, ingresa tu nombre de usuario y contraseña.';
-        errorDiv.classList.add('show');
-        return;
+      loaderDiv.style.display = 'none';
+      errorDiv.textContent = 'Por favor, ingresa tu nombre de usuario y contraseña.';
+      errorDiv.classList.add('show');
+      return;
     }
-
+  
     try {
-        const response = await fetch(`${API_URL}/users/login`, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json' 
-            },
-            body: JSON.stringify({ userName: username, password })
-        });
-
-        // Verificar si la respuesta fue exitosa
-        if (!response.ok) {
-            const data = await response.json();
-            throw new Error(data.error || 'Error en el inicio de sesión');
-        }
-
+      const response = await fetch(`${API_URL}/users/login`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json' 
+        },
+        body: JSON.stringify({ userName: username, password })
+      });
+  
+      if (!response.ok) {
         const data = await response.json();
-        
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('role', data.role);
-        localStorage.setItem('username', username);
-        localStorage.setItem('userId', data.userId);
-
-        renderDashboard();
+        throw new Error(data.error || 'Error en el inicio de sesión');
+      }
+  
+      const data = await response.json();
+      
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('role', data.role);
+      localStorage.setItem('username', username);
+      localStorage.setItem('userId', data.userId);
+  
+      renderDashboard();
     } catch (error) {
-        loaderDiv.style.display = 'none';
-
-        // Mostrar el mensaje de error específico
-        errorDiv.textContent = error.message || 'Ocurrió un error al intentar iniciar sesión. Por favor, intenta de nuevo.';
-        errorDiv.classList.add('show');
-        console.log('Error en la solicitud de inicio de sesión:', error);
+      loaderDiv.style.display = 'none';
+      errorDiv.textContent = error.message || 'Ocurrió un error al intentar iniciar sesión. Por favor, intenta de nuevo.';
+      errorDiv.classList.add('show');
+      console.log('Error en la solicitud de inicio de sesión:', error);
     } finally {
-        loaderDiv.style.display = 'none';
+      loaderDiv.style.display = 'none';
     }
-};
-
+  };
+  
 
 export const renderLogin = () => {
     const token = localStorage.getItem('token');
